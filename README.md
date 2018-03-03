@@ -27,7 +27,41 @@ The Fuzzy C-Means Algorithm improves upon K Means by allowing data points to hav
 - Initizalize Clusters with K-Means and Fuzzy C-Means output.
 - Run PCM on NFL Play Data.
 
+### Benefits / Expected Outcomes
+
+The ultimate goal for the project is to create a working implementation of the Possibilistic C-Means Algorithm that can be generalized for a multitude of use cases. This implementation will be released to Github to allow it for use by Data Scientists and Machine Learning Specialists, as well as a comparison point for my Senior Capstone Project that compares Machine Learning Models for predicting the outcomes of NFL Games.
+
 ### Algorithm
 
+![C Means Pseudocode](Pseudocode.jpg)
+
+Where:
+
+![U Formula](UFormula.jpg)
+
+and 
+
+![Eta Formula](EtaFormula.jpg)
+
+Calculated with the results from Fuzzy C-Means or set equal to 1
 
 Source: Keller, Fundamentals of Computational Intelligence
+
+### Libraries Utilized
+
+- [Numpy](numpy.org)
+    - Scientific Computing Python Library
+- [Matplotlib](matplotlib.org)
+    - Python Library for plotting graphs and charts
+- [Scikit Learn](scikit-learn.org)
+    - Python Library with preloaded datasets and the Fuzzy C-Means Algorithm
+    - Use for comparison and testing.
+
+### Validation and Testing
+
+For initial validation and testing, the Iris flower data set as collected by Ronald Fisher will be used, as it is easily available and the proper classiciation is already known. Data will be run through both the Project Built PCM and the Fuzzy C-Means as available in the Scikit-fuzzy Open Source Python Library. Since the data has been filtered for noise points, both algorithms should provide similar results. The labels in the data itself can also be used to verify.
+
+[https://en.wikipedia.org/wiki/Iris_flower_data_set](https://en.wikipedia.org/wiki/Iris_flower_data_set)
+
+Once the algorithm is verified, it will then be tested on National Football League Play Data from 2006-2016 to assist in finding patterns in play styles. The dataset is openly available on Kaggle.com and is used in conjunction with a Senior Cpastone Project shared with James Hurt and Payton Hosna.
+
