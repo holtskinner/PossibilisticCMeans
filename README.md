@@ -1,6 +1,10 @@
-# Possibilistic C-Means
+# Project Proposal
+
+## Possibilistic C-Means
 
 **Holt Skinner**
+
+**Machine Learning & Pattern Recognition**
 
 ### Description
 In the world of clustering algorithms, the K Means and Fuzzy C-Means Algorithms remain popular choices to determine clusters. The basic K Means clustering algorithm goes as follows.
@@ -22,7 +26,7 @@ The Fuzzy C-Means Algorithm improves upon K Means by allowing data points to hav
 - Test with Well-Known Data Set (Iris Data)
 - Display Results in a Scatter Chart
 
-#### Long-Term
+#### Long-Term & Final
 
 - Initizalize Clusters with K-Means and Fuzzy C-Means output.
 - Run PCM on NFL Play Data.
@@ -63,5 +67,5 @@ For initial validation and testing, the Iris flower data set as collected by Ron
 
 [https://en.wikipedia.org/wiki/Iris_flower_data_set](https://en.wikipedia.org/wiki/Iris_flower_data_set)
 
-Once the algorithm is verified, it will then be tested on National Football League Play Data from 2006-2016 to assist in finding patterns in play styles. The dataset is openly available on Kaggle.com and is used in conjunction with a Senior Cpastone Project shared with James Hurt and Payton Hosna.
+Once the algorithm is verified, it will then be tested on [National Football League Play Data](https://www.kaggle.com/maxhorowitz/nflplaybyplay2009to2016) from 2009-2016 to assist in finding patterns in play styles. The dataset is openly available on Kaggle.com and is used in conjunction with a Senior Capstone Project shared with James Hurt and Payton Hosna.
 
