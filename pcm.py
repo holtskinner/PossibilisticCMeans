@@ -1,7 +1,52 @@
 import numpy as np
+import skfuzzy as fuzz
 
 
 def pcm(x, c, m=2, e=0.01, max_iterations=100, v=None):
+    """
+    Possibilistic C-Means Algorithm
+
+    ### Parameters
+
+    `x` 2D array, size (S, N)  
+        Data to be clustered. N is the number of data sets;
+        S is the number of features within each sample vector. 
+
+    `c` int  
+        Number of clusters
+
+    `m` float, optional  
+        Fuzzifier
+
+    `e` float, optional  
+        Convergence threshold
+
+    `max_iterations` int, optional  
+        Maximum number of iterations
+
+    `v` array-like, optional  
+        Initial cluster centers
+
+    ### Returns
+
+    `cluster_centers` 2D Array, size (S, c)
+
+    `u` 2D Array (S, N)  
+        Final partitioned matrix
+    
+    `u0` 2D Array (S, N)  
+        Initial partition matrix
+    
+    `d` 2D Array (S, N)  
+        Distance Matrix
+    
+    `p` int  
+        Number of iterations run
+
+    `f` float  
+        Final fuzzy partition coeffiient
+
+    """
 
     if not x.any():
         print("Error: Data cannot be None")
@@ -23,11 +68,9 @@ def pcm(x, c, m=2, e=0.01, max_iterations=100, v=None):
         # Turn the input array into a numpy array
         v = np.array(v)
 
-    print(v)
-
-    return 0
+    return
 
 
 data = np.random.randint(100, size=5)
 print(data)
-pcm(data, 2, 2)
+pcm(x=data, c=2, m=2)
