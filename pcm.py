@@ -15,8 +15,24 @@ def criterion_function(x, v, eta, m):
     return u
 
 
-def update_cluster_centers():
-    return
+def update_cluster_centers(x, c, m, u):
+
+    n = len(x[0])
+
+    v = np.zeros((c, n))
+
+    for i in range(c):
+        numerator = 0
+        denominator = 0
+
+        for k in range(n):
+            fuzzified = np.power(u[i, k], m)
+            numerator += fuzzified * x[k]
+            denominator += fuzzified
+
+        v[i] = numerator / denominator
+
+    return v
 
 
 def pcm(x, c, m=2, e=0.01, max_iterations=100, v0=None):
@@ -89,7 +105,7 @@ def pcm(x, c, m=2, e=0.01, max_iterations=100, v0=None):
     # List of all cluster centers (Bookkeeping)
     v = np.array([v0])
 
-    # Partition Matrix
+    # Membership Matrix
     u = np.array([[[]]])
 
     n = eta()
@@ -105,13 +121,11 @@ def pcm(x, c, m=2, e=0.01, max_iterations=100, v0=None):
                 u[t, i, k] = criterion_function(x[k], v[i], n, m)
 
         t += 1
+
+        v[t] = update_cluster_centers(x, c, m, u[t])
+
         # Stopping Criteria
         if np.linalg.norm(v[t] - v[t - 1]) < e:
             break
 
-    return v
-
-
-data = np.random.randint(100, size=5)
-print(data)
-pcm(x=data, c=2, m=2)
+    return v[t], u[t], u[0], None, t, None
