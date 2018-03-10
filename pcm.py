@@ -1,49 +1,42 @@
 import numpy as np
 import skfuzzy as fuzz
+from scipy.spatial.distance import cdist
 
 
 def eta():
     return 1
 
 
-def criterion_function(x, v, eta, m):
-    d = np.square(np.linalg.norm(x - v))
-
-    ex = 2 / (m - 1)
-    fz = np.power(d / eta, ex)
-    u = 1 / (1 + fz)
-    return u
+def fcm_criterion_function():
+    return
 
 
-def update_cluster_centers(x, c, m, u):
+def pcm_criterion_function(x, v, n, m, metric="euclidean"):
 
-    # v = np.zeros((c, ))
-    # TODO Fix Dimensionality
-    for i in range(c):
-        numerator = 0
-        denominator = 0
+    # Criterion Function
+    d = cdist(x.T, v, metric=metric).T / n
+    u = 1 / (1 + d**(1 / (m - 1)))
 
-        for k in range(n):
-            fuzzified = np.power(u[i, k], m)
-            numerator += fuzzified * x[k]
-            denominator += fuzzified
+    # Update Clusters
+    um = u**m
+    v = (um.dot(x.T).T / um.sum(axis=1)).T
 
-        print(numerator)
+    print(v)
 
-        print(denominator)
-        print("\n")
-        v[i] = numerator / denominator
-
-    return v
+    return u, v
 
 
-def pcm(x, c, m=2, e=0.01, max_iterations=100, v0=None):
+def fcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
+    return
+
+
+def pcm(x, c, m=2, e=0.0001, max_iterations=1000, v0=None):
     """
     Possibilistic C-Means Algorithm
 
-    ### Parameters
+    # Parameters
 
-    `x` 2D array, size (N, S)  
+    `x` 2D array, size (S, N)  
         Data to be clustered. N is the number of data sets;
         S is the number of features within each sample vector. 
 
@@ -62,7 +55,7 @@ def pcm(x, c, m=2, e=0.01, max_iterations=100, v0=None):
     `v0` array-like, optional  
         Initial cluster centers
 
-    ### Returns
+    # Returns
 
     `v` 2D Array, size (S, c)  
         Cluster centers
@@ -88,8 +81,8 @@ def pcm(x, c, m=2, e=0.01, max_iterations=100, v0=None):
         print("Error: Data is in incorrect format")
         return
 
-    N = len(x)  # Number of datapoints
-    S = len(x[0])  # Number of features
+    # Num Features, Datapoints
+    S, N = x.shape
 
     if not c or c <= 0:
         print("Error: Number of clusters must be at least 1")
@@ -100,16 +93,16 @@ def pcm(x, c, m=2, e=0.01, max_iterations=100, v0=None):
 
     # Initialize the cluster centers
     # If the user doesn't provide their own starting points,
-    if not v0 or not v0.any() or len(v0) != c:
+    if v0 is None or len(v0) != c:
         # Pick random values from dataset
-        v0 = x[np.random.choice(x.shape[0], c, replace=True), :]
+        v0 = x.T[np.random.choice(N, c, replace=True), :]
 
     # List of all cluster centers (Bookkeeping)
     v = np.zeros((max_iterations, c, S))
     v[0] = np.array(v0)
 
     # Membership Matrix Each Data Point in eah cluster
-    u = np.zeros((max_iterations, N, c))
+    u = np.zeros((max_iterations, c, N))
 
     n = eta()
 
@@ -118,18 +111,12 @@ def pcm(x, c, m=2, e=0.01, max_iterations=100, v0=None):
 
     while t < max_iterations - 1:
 
-        # Cycle through datapoints's
-        for k in range(N):
-            # cycle through clusters
-            for i in range(c):
-                u[t, k, i] = criterion_function(x[k], v[t, i], n, m)
-
-        t += 1
-
-        v[t] = update_cluster_centers(x, c, m, u[t])
+        u[t], v[t] = pcm_criterion_function(x, v[t - 1], n, m)
 
         # Stopping Criteria
         if np.linalg.norm(v[t] - v[t - 1]) < e:
             break
 
-    return v[t], u[t], u[0], None, t, None
+        t += 1
+
+    return v[t], u[t - 1], u[0], None, t, None

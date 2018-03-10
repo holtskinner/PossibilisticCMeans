@@ -1,18 +1,34 @@
 import numpy as np
 import sklearn as sk
-import skfuzzy as fuzzy
+import skfuzzy as fuzz
 from plot import plot
 from pcm import pcm
 
-num_datapoints = 3
+num_datapoints = 1000
 num_features = 2
 
-x = np.random.uniform(low=0, high=1000, size=(num_datapoints, num_features))
-y = np.random.uniform(low=2000, high=3000, size=(num_datapoints, num_features))
+# Define three cluster centers
+centers = np.array([[4, 2], [1, 7], [5, 6]])
 
-xy = np.concatenate((x, y), axis=0)
-np.random.shuffle(xy)
+# Define three cluster sigmas in x and y, respectively
+sigmas = np.array([[0.8, 0.3], [0.3, 0.5], [1.1, 0.7]])
 
-# plot(xy)
+# Generate test data
+np.random.seed(42)  # Set seed for reproducibility
+x = np.zeros(1)
+y = np.zeros(1)
 
-y = pcm(x=xy, c=2, m=2)
+for i, ((xmu, ymu), (xsigma, ysigma)) in enumerate(zip(centers, sigmas)):
+    x = np.hstack((x,
+                   np.random.standard_normal(num_datapoints) * xsigma + xmu))
+    y = np.hstack((y,
+                   np.random.standard_normal(num_datapoints) * ysigma + ymu))
+
+xy = np.vstack((x, y))
+
+# v, u, u0, d, _, t, f = fuzz.cmeans(
+#     data=xy, c=3, error=.00001, m=2, maxiter=10000)
+
+v, u, u0, d, t, f = pcm(x=xy, c=3, m=2, max_iterations=10000, v0=None)
+
+plot(xy, v, u, 3)
