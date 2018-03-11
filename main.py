@@ -27,8 +27,11 @@ for i, ((xmu, ymu), (xsigma, ysigma)) in enumerate(zip(centers, sigmas)):
 xy = np.vstack((x, y))
 
 # v, u, u0, d, _, t, f = fuzz.cmeans(
-#     data=xy, c=3, error=.00001, m=2, maxiter=10000)
+    # data=xy, c=3, error=0.001, m=2, maxiter=1000)
 
-v, u, u0, d, t, f = pcm(x=xy, c=3, m=2, max_iterations=10000, v0=None)
+# print(v)
+
+v, u, u0, d, t, f = pcm(x=xy, c=3, m=2, e=0.001, max_iterations=1000, v0=centers)
 
 plot(xy, v, u, 3)
+# print(v)

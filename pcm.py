@@ -13,15 +13,20 @@ def fcm_criterion_function():
 
 def pcm_criterion_function(x, v, n, m, metric="euclidean"):
 
+    x = x.T
     # Criterion Function
-    d = cdist(x.T, v, metric=metric).T / n
+    d = cdist(x, v, metric=metric).T
+    d = d ** 2
+
+    exp = 1. / (m - 1)
+
+    di = d ** (1 / (m - 1))
     u = 1 / (1 + d**(1 / (m - 1)))
 
     # Update Clusters
-    um = u**m
-    v = (um.dot(x.T).T / um.sum(axis=1)).T
+    um = u ** m
 
-    print(v)
+    v = um.dot(x) / np.atleast_2d(um.sum(axis=1)).T
 
     return u, v
 
@@ -30,7 +35,7 @@ def fcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
     return
 
 
-def pcm(x, c, m=2, e=0.0001, max_iterations=1000, v0=None):
+def pcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
     """
     Possibilistic C-Means Algorithm
 
@@ -111,10 +116,10 @@ def pcm(x, c, m=2, e=0.0001, max_iterations=1000, v0=None):
 
     while t < max_iterations - 1:
 
-        u[t], v[t] = pcm_criterion_function(x, v[t - 1], n, m)
+        u[t], v[t + 1] = pcm_criterion_function(x, v[t], n, m)
 
         # Stopping Criteria
-        if np.linalg.norm(v[t] - v[t - 1]) < e:
+        if np.linalg.norm(v[t + 1] - v[t]) < e:
             break
 
         t += 1
