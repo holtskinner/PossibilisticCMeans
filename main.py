@@ -7,27 +7,45 @@ import cmeans
 
 num_samples = 100000
 num_features = 2
-c = 3
+c = 4
 fuzzifier = 2
 error = 0.001
-maxiter = 100
+maxiter = 1000
 
-# x = ds.make_blobs(num_samples, num_features, c)[0].T
+x = ds.make_blobs(num_samples, num_features, c)[0].T
+
+np.random.shuffle(x)
+
+# v, u, u0, d, t = cmeans.fcm(x, c, fuzzifier, error, maxiter)
+
+v, u, u0, d, t = cmeans.pcm(
+    x, c, fuzzifier, error, maxiter)
+
+plot(x, v, u, c)
+
 
 iris = ds.load_iris()
 
-x = np.array(iris.data)
-np.random.shuffle(x)
-
-x = x.T
-
 labels = iris.target_names
+target = iris.target
+iris = np.array(iris.data)
 
-v, u, u0, d, t, f = cmeans.fcm(x, c, fuzzifier, error, maxiter)
+iris = iris.T
 
-# v, u, u0, d, _, t, f = fuzz.cmeans(x, c, fuzzifier, error, maxiter)
+v, u, u0, d, t = cmeans.fcm(iris, c, fuzzifier, error, maxiter)
 
-v, u, u0, d, t, f = cmeans.pcm(
-    x, c, fuzzifier, error, maxiter, v0=v, u0=u, d=d)
+# v, u, u0, d, t = cmeans.pcm(
+#     iris, c, fuzzifier, error, maxiter, v0=v, u0=u, d=d)
 
-plot(x, v, u, c, labels)
+plot(iris, v, u, c, labels)
+
+cluster_membership = np.argmax(u, axis=0)
+print(target)
+print(cluster_membership)
+count = 0
+for i in range(len(cluster_membership)):
+    if target[i] == cluster_membership[i]:
+        count += 1
+
+
+print(f"Score: {count / len(cluster_membership)}")

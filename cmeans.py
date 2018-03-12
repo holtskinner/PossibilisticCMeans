@@ -4,13 +4,9 @@ from scipy.spatial.distance import cdist
 
 
 def eta(u, d, m):
-
     um = u ** m
-    um = um.T
     d = d ** 2
-
-    n = um.dot(d) / np.atleast_2d(um.sum(axis=1))
-
+    n = um.dot(d.T) / um.sum(axis=1)
     return n
 
 
@@ -43,7 +39,7 @@ def _pcm_criterion(x, v, n, m, metric):
 
     d2 = d ** 2
 
-    d2 / n
+    # d2 = d2 / n
 
     exp = 1. / (m - 1)
     d2 = d2 ** exp
@@ -57,44 +53,41 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
 
     # Parameters
 
-    `x` 2D array, size (S, N)  
+    `x` 2D array, size (S, N)
         Data to be clustered. N is the number of data sets;
-        S is the number of features within each sample vector. 
+        S is the number of features within each sample vector.
 
-    `c` int  
+    `c` int
         Number of clusters
 
-    `m` float, optional  
+    `m` float, optional
         Fuzzifier
 
-    `e` float, optional  
+    `e` float, optional
         Convergence threshold
 
-    `max_iterations` int, optional  
+    `max_iterations` int, optional
         Maximum number of iterations
 
-    `v0` array-like, optional  
+    `v0` array-like, optional
         Initial cluster centers
 
     # Returns
 
-    `v` 2D Array, size (S, c)  
+    `v` 2D Array, size (S, c)
         Cluster centers
 
-    `u` 2D Array (S, N)  
+    `u` 2D Array (S, N)
         Final partitioned matrix
 
-    `u0` 2D Array (S, N)  
+    `u0` 2D Array (S, N)
         Initial partition matrix
 
-    `d` 2D Array (S, N)  
+    `d` 2D Array (S, N)
         Distance Matrix
 
-    `t` int  
+    `t` int
         Number of iterations run
-
-    `f` float  
-        Final fuzzy partition coeffiient
 
     """
 
@@ -144,7 +137,8 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
 
         t += 1
 
-    return v[t], u[t - 1], u[0], d, t, None
+    return v[t], u[t - 1], u[0], d, t
+
 
 # Public Facing Functions
 

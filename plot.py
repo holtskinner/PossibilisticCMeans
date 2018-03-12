@@ -1,9 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from sklearn.decomposition import PCA
 
 
-def plot(x, v, u, c, labels):
+def plot(x, v, u, c, labels=None):
 
     ax = plt.subplots()[1]
 
@@ -14,16 +13,16 @@ def plot(x, v, u, c, labels):
 
     for j in range(c):
         ax.scatter(
-            x[2][cluster_membership == j],
-            x[3][cluster_membership == j],
-            label=labels[j],
+            x[0][cluster_membership == j],
+            x[1][cluster_membership == j],
+            # label=labels[j],
             alpha=0.5,
             edgecolors="none",
             c=colors[j])
 
     # Mark the center of each fuzzy cluster
     for pt in v:
-        ax.plot(pt[2], pt[3], 'rs')
+        ax.plot(pt[0], pt[1], 'rs')
 
     ax.legend()
     ax.grid(True)
