@@ -7,37 +7,45 @@ def eta():
     return 1
 
 
-def fcm_criterion_function():
-    return
+def update_clusters(x, u, m):
+    um = u ** m
+    v = um.dot(x.T) / np.atleast_2d(um.sum(axis=1)).T
+    return v
 
 
-def pcm_criterion_function(x, v, n, m, metric="euclidean"):
+def _fcm_criterion(x, v, n, m, metric):
 
-    x = x.T
-    # Criterion Function
-    d = cdist(x, v, metric=metric).T
+    d = cdist(x.T, v, metric=metric).T
+
+    # Sanitize Distances (Avoid Zeroes)
+    d = np.fmax(d, np.finfo(x.dtype).eps)
+
+    exp = -2. / (m - 1)
+    d = d ** exp
+
+    u = d / np.sum(d, axis=0, keepdims=1)
+
+    return u
+
+
+def _pcm_criterion(x, v, n, m, metric):
+
+    d = cdist(x.T, v, metric=metric).T
+
+    d = np.fmax(d, np.finfo(x.dtype).eps)
+
     d = d ** 2
+    d /= n
 
     exp = 1. / (m - 1)
+    d = d ** exp
+    u = 1. / (1. + d)
 
-    di = d ** (1 / (m - 1))
-    u = 1 / (1 + d**(1 / (m - 1)))
-
-    # Update Clusters
-    um = u ** m
-
-    v = um.dot(x) / np.atleast_2d(um.sum(axis=1)).T
-
-    return u, v
+    return u
 
 
-def fcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
-    return
-
-
-def pcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
+def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", v0=None):
     """
-    Possibilistic C-Means Algorithm
 
     # Parameters
 
@@ -67,13 +75,13 @@ def pcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
 
     `u` 2D Array (S, N)  
         Final partitioned matrix
-    
+
     `u0` 2D Array (S, N)  
         Initial partition matrix
-    
+
     `d` 2D Array (S, N)  
         Distance Matrix
-    
+
     `t` int  
         Number of iterations run
 
@@ -100,7 +108,8 @@ def pcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
     # If the user doesn't provide their own starting points,
     if v0 is None or len(v0) != c:
         # Pick random values from dataset
-        v0 = x.T[np.random.choice(N, c, replace=True), :]
+        xt = x.T
+        v0 = xt[np.random.choice(xt.shape[0], c, replace=False), :]
 
     # List of all cluster centers (Bookkeeping)
     v = np.zeros((max_iterations, c, S))
@@ -116,7 +125,8 @@ def pcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
 
     while t < max_iterations - 1:
 
-        u[t], v[t + 1] = pcm_criterion_function(x, v[t], n, m)
+        u[t] = criterion_function(x, v[t], n, m, metric)
+        v[t + 1] = update_clusters(x, u[t], m)
 
         # Stopping Criteria
         if np.linalg.norm(v[t + 1] - v[t]) < e:
@@ -125,3 +135,13 @@ def pcm(x, c, m=2, e=0.00001, max_iterations=1000, v0=None):
         t += 1
 
     return v[t], u[t - 1], u[0], None, t, None
+
+# Public Facing Functions
+
+
+def pcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
+    return _cmeans(x, c, m, e, max_iterations, _pcm_criterion, metric, v0)
+
+
+def fcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
+    return _cmeans(x, c, m, e, max_iterations, _fcm_criterion, metric, v0)
