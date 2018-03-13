@@ -33,15 +33,15 @@ The ultimate goal for the project is to create a working implementation of the P
 
 ### Algorithm
 
-![C Means Pseudocode](Pseudocode.jpg)
+![C Means Pseudocode](Pseudocode.JPG)
 
 Where:
 
-![U Formula](UFormula.jpg)
+![U Formula](UFormula.JPG)
 
 and 
 
-![Eta Formula](EtaFormula.jpg)
+![Eta Formula](EtaFormula.JPG)
 
 Calculated with the results from Fuzzy C-Means or set equal to 1
 
@@ -278,17 +278,17 @@ plot(iris, v, u, c, labels)
 For each run of the algorithm, the data was first run through the Fuzzy C Means algorithm to obtain reasonable initial cluster centers, and them the data is run through the Possibilistic C Means Algorithm with the cluster centers obtained from FCM.
 During development of the algorithms, random multi-dimensional gaussian "blobs" were generated with the scikit learn function `make_blobs`. After using matplotlib functions to graph the clusters and the centers (using different colors to differentiate), the following graphs were produced with random initializations of cluster numbers, features, sample sizes. 
 
-![](./clusterImages/Cluster2.jpg)
-![](./clusterImages/Cluster3.jpg)
-![](./clusterImages/Cluster4.jpg)
-![](./clusterImages/Cluster5.jpg)
-![](./clusterImages/Cluster6.jpg)
+![](./clusterImages/Cluster2.JPG)
+![](./clusterImages/Cluster3.JPG)
+![](./clusterImages/Cluster4.JPG)
+![](./clusterImages/Cluster5.JPG)
+![](./clusterImages/Cluster6.JPG)
 
 [https://en.wikipedia.org/wiki/Iris_flower_data_set](https://en.wikipedia.org/wiki/Iris_flower_data_set)
 
 For additional validation and testing, the Iris flower data set as collected by Ronald Fisher was used, as it is easily available in the scikit learn library and the proper classiciation is already known. The Data was run through both the Project Built PCM and FCM as well as the Fuzzy C-Means as available in the Scikit-fuzzy Open Source Python Library. Since the data has been filtered for noise points, both algorithms provided similar results. The labels in the data itself were used as a validation measure by calculating the percentage correctly identified based on the target labels. The FCM and PCM together averaged 92% accuracy. The especially challenging parts to differentiate were between the versicolor and virignica species because thedata is very close in certain dimensionality. This plot is based on two of the four features in the data set that are easiest to dicern visually.
 
-![](./clusterImages/Iris.jpg) 
+![](./clusterImages/Iris.JPG) 
 
 ### Analysis
 
@@ -299,7 +299,7 @@ This implementation has allowed a great expansion of knowledge about not only th
 
 The primary con of Posssibilistic C Means Algorithm as compared to Fuzzy C Means is its stability and consistency. PCM is much more sensitive to random initialization of cluster centers and to the value of the fuzzifier constant. For all of the images above, the data was run through FCM before hitting the PCM and the fuzzifier was kept at 2, as it provided the most accurate results for these datasets. One issue that arose when running PCM on its own was collision of the cluster centers. If any of the initial cluster centers happened to be close to each other, the PCM would have issues moving one of the centers to another part of the data space. This resulted in charts similar to the one below. The cluster center on the left is actually 3 cluster centers with neglibible distance between them. Runnign FCM before PCM resolves this by providing better starting points rather than random initialization. This bug was a major block in production for a part of the project because the results would be wildly inconsistent between tests.
 
-![](./clusterImages/BadClusters.jpg)
+![](./clusterImages/BadClusters.JPG)
 
 #### Further Work
 
