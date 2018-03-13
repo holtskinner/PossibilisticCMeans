@@ -64,6 +64,7 @@ Source: Keller, Fundamentals of Computational Intelligence
 - [Scikit Learn](scikit-learn.org)
     - Python Library with preloaded datasets
     - Use for comparison and testing.
+
 - [Scikit Fuzzy](pythonhosted.org/scikit-fuzzy/)
     - Python Library containing the Fuzzy C Means Algorithm as well as other fuzzy logic operations
 
@@ -272,7 +273,6 @@ plot(iris, v, u, c, labels)
 ```
 
 
-
 ### Validation and Testing
 
 For each run of the algorithm, the data was first run through the Fuzzy C Means algorithm to obtain reasonable initial cluster centers, and them the data is run through the Possibilistic C Means Algorithm with the cluster centers obtained from FCM.
@@ -297,12 +297,12 @@ This implementation has allowed a great expansion of knowledge about not only th
 
 #### Poking and Prying
 
-The primary con of Posssibilistic C Means Algorithm as compared to Fuzzy C Means is its stability and consistency. PCM is much more sensitive to random initialization of cluster centers and to the value of the fuzzifier constant. For all of the images above, the data was run through FCM before hitting the PCM and the fuzzifier was kept at 2, as it provided the most accurate results for these datasets. One issue that arose when running PCM on its own was collision of the cluster centers. If any of the initial cluster centers happened to have values very close to each other, the PCM would have issues moving one of the centers to another part of the data space. This resulted in charts similar to the one below. The cluster center on the left is actually 3 cluster centers with neglibible distance between them. Runnign FCM before PCM resolves this by providing better starting points rather than random initialization. This bug was a major block in production for a part of the project because the results would be wildly inconsistent between tests.
+The primary con of Posssibilistic C Means Algorithm as compared to Fuzzy C Means is its stability and consistency. PCM is much more sensitive to random initialization of cluster centers and to the value of the fuzzifier constant. For all of the images above, the data was run through FCM before hitting the PCM and the fuzzifier was kept at 2, as it provided the most accurate results for these datasets. One issue that arose when running PCM on its own was collision of the cluster centers. If any of the initial cluster centers happened to be close to each other, the PCM would have issues moving one of the centers to another part of the data space. This resulted in charts similar to the one below. The cluster center on the left is actually 3 cluster centers with neglibible distance between them. Runnign FCM before PCM resolves this by providing better starting points rather than random initialization. This bug was a major block in production for a part of the project because the results would be wildly inconsistent between tests.
 
 ![](./clusterImages/BadClusters.jpg)
 
-### Further Work
+#### Further Work
 
 To continue working on the implementation, an ultimate goal is to add a PCM implementation to the scikit fuzzy open source library. The library is currently on GitHub and is accepting pull requests. A next step is to make a clone of the scikit fuzzy library and make modifications to add PCM to the FCM module. In my implementation, I have set up the parameters similar to the existing library to allow for an easier transition. The implementation also uses functional programming concepts to allow the criterion function to be sent as a parameter to the clustering algorithm, since it is the primary differentiator.
 
-Another possible use of this implementation is for my undergraduate capstone project team. We are using various Machine Learning and Pattern Recodnition Tools to predict the outcome of NFL Games, and it would be interesting to compare the results of the PCM algorithm versus other methods such as a Multi Layer Perceptron or Support Vector Machines.
+Another possible use of this implementation is for my undergraduate capstone project team. We are using various Machine Learning and Pattern Recognition Tools to predict the outcome of NFL Games, and it would be interesting to compare the results of the PCM algorithm versus other methods such as a Multi Layer Perceptron or a Support Vector Machine.
