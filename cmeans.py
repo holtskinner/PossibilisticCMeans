@@ -5,17 +5,24 @@ from scipy.spatial.distance import cdist
 def eta(num_clusters, centers, membership, distance, fuzzifier):
 
     n = np.empty(num_clusters)
+    n2 = np.empty(num_clusters)
+
+    u = membership ** fuzzifier
+    d = distance ** 2
+
+    num2 = np.sum(u * d, axis=1)
+    denom2 = np.sum(u, axis=1)
+
+    n2 = num2 / denom2
 
     for i in range(num_clusters):
 
-        u = membership[i] ** fuzzifier
-        d = distance[i] ** 2
+        num = np.dot(u[i], d[i])
+        denom = np.sum(u[i])
+        n[i] = num / denom
 
-        num = np.dot(u, d)
-        denom = np.sum(u)
-        a = num / denom
-        n[i] = a
-
+    print(n)
+    print(n2)
     return n
 
 

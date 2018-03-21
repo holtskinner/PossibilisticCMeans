@@ -12,17 +12,13 @@ fuzzifier = 3
 error = 0.001
 maxiter = 1000
 
-# np.random.seed(100)
+np.random.seed(100)
 
 x = ds.make_blobs(num_samples, num_features, c)[0]
 
 np.random.shuffle(x)
 
 x = x.T
-
-# v, u, u0, d, t = cmeans.fcm(x, c, fuzzifier, error, maxiter)
-
-# plot(x, v, u, c)
 
 v, u, u0, d, t = cmeans.pcm(x, c, fuzzifier, error, maxiter)
 
