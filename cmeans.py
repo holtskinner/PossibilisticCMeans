@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 
-def eta(v, u, d, m):
+def eta(u, d, m):
 
     u = u ** m
     d = d ** 2
@@ -146,5 +146,5 @@ def fcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
 
 def pcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
     v, u, _, d, _ = fcm(x, c, m, e, max_iterations, metric=metric, v0=v0)
-    n = eta(v, u, d, m)
+    n = eta(u, d, m)
     return _cmeans(x, c, m, e, max_iterations, _pcm_criterion, metric, v0=v, n=n)
