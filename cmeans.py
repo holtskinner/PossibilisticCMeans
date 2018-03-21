@@ -1,12 +1,21 @@
 import numpy as np
-import skfuzzy as fuzz
 from scipy.spatial.distance import cdist
 
 
-def eta(u, d, m):
-    um = u ** m
-    d = d ** 2
-    n = um.dot(d.T) / um.sum(axis=1)
+def eta(num_clusters, centers, membership, distance, fuzzifier):
+
+    n = np.empty(num_clusters)
+
+    for i in range(num_clusters):
+
+        u = membership[i] ** fuzzifier
+        d = distance[i] ** 2
+
+        num = np.dot(u, d)
+        denom = np.sum(u)
+        a = num / denom
+        n[i] = a
+
     return n
 
 
@@ -24,9 +33,9 @@ def _fcm_criterion(x, v, n, m, metric):
     d = np.fmax(d, np.finfo(x.dtype).eps)
 
     exp = -2. / (m - 1)
-    d = d ** exp
+    d2 = d ** exp
 
-    u = d / np.sum(d, axis=0, keepdims=1)
+    u = d2 / np.sum(d2, axis=0, keepdims=1)
 
     return u, d
 
@@ -34,12 +43,11 @@ def _fcm_criterion(x, v, n, m, metric):
 def _pcm_criterion(x, v, n, m, metric):
 
     d = cdist(x.T, v, metric=metric).T
-
     d = np.fmax(d, np.finfo(x.dtype).eps)
 
     d2 = d ** 2
 
-    # d2 = d2 / n
+    d2 = d2 / n
 
     exp = 1. / (m - 1)
     d2 = d2 ** exp
@@ -48,7 +56,7 @@ def _pcm_criterion(x, v, n, m, metric):
     return u, d
 
 
-def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", v0=None, u0=None, d=None):
+def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", v0=None, n=None):
     """
 
     # Parameters
@@ -112,15 +120,13 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
         # Pick random values from dataset
         xt = x.T
         v0 = xt[np.random.choice(xt.shape[0], c, replace=False), :]
-    else:
-        n = eta(u0, d, m)
 
     # List of all cluster centers (Bookkeeping)
-    v = np.zeros((max_iterations, c, S))
+    v = np.empty((max_iterations, c, S))
     v[0] = np.array(v0)
 
     # Membership Matrix Each Data Point in eah cluster
-    u = np.zeros((max_iterations, c, N))
+    u = np.empty((max_iterations, c, N))
 
     # Number of Iterations
     t = 0
@@ -129,7 +135,6 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
 
         u[t], d = criterion_function(x, v[t], n, m, metric)
         v[t + 1] = update_clusters(x, u[t], m)
-        n = eta(u[t], d, m)
 
         # Stopping Criteria
         if np.linalg.norm(v[t + 1] - v[t]) < e:
@@ -147,5 +152,7 @@ def fcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
     return _cmeans(x, c, m, e, max_iterations, _fcm_criterion, metric, v0=v0)
 
 
-def pcm(x, c, m, e, max_iterations, metric="euclidean", v0=None, u0=None, d=None):
-    return _cmeans(x, c, m, e, max_iterations, _pcm_criterion, metric, v0=v0, u0=u0, d=d)
+def pcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
+    v, u, _, d, _ = fcm(x, c, m, e, max_iterations, metric=metric, v0=v0)
+    n = eta(c, v, u, d, m)
+    return _cmeans(x, c, m, e, max_iterations, _pcm_criterion, metric, v0=v, n=n)
