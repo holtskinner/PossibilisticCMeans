@@ -2,16 +2,15 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 
-def eta(u, d, m):
+def _eta(u, d, m):
 
     u = u ** m
-    d = d ** 2
     n = np.sum(u * d, axis=1) / np.sum(u, axis=1)
 
     return n
 
 
-def update_clusters(x, u, m):
+def _update_clusters(x, u, m):
     um = u ** m
     v = um.dot(x.T) / np.atleast_2d(um.sum(axis=1)).T
     return v
@@ -46,47 +45,6 @@ def _pcm_criterion(x, v, n, m, metric):
 
 
 def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", v0=None, n=None):
-    """
-
-    # Parameters
-
-    `x` 2D array, size (S, N)
-        Data to be clustered. N is the number of data sets;
-        S is the number of features within each sample vector.
-
-    `c` int
-        Number of clusters
-
-    `m` float, optional
-        Fuzzifier
-
-    `e` float, optional
-        Convergence threshold
-
-    `max_iterations` int, optional
-        Maximum number of iterations
-
-    `v0` array-like, optional
-        Initial cluster centers
-
-    # Returns
-
-    `v` 2D Array, size (S, c)
-        Cluster centers
-
-    `u` 2D Array (S, N)
-        Final partitioned matrix
-
-    `u0` 2D Array (S, N)
-        Initial partition matrix
-
-    `d` 2D Array (S, N)
-        Distance Matrix
-
-    `t` int
-        Number of iterations run
-
-    """
 
     if not x.any() or len(x) < 1 or len(x[0]) < 1:
         print("Error: Data is in incorrect format")
@@ -122,7 +80,7 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
     while t < max_iterations - 1:
 
         u[t], d = criterion_function(x, v[t], n, m, metric)
-        v[t + 1] = update_clusters(x, u[t], m)
+        v[t + 1] = _update_clusters(x, u[t], m)
 
         # Stopping Criteria
         if np.linalg.norm(v[t + 1] - v[t]) < e:
@@ -130,17 +88,65 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
 
         t += 1
 
-    return v[t], u[t - 1], u[0], d, t
+    return v[t], v[0], u[t - 1], u[0], d, t
 
 
 # Public Facing Functions
 
 
 def fcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
+
     return _cmeans(x, c, m, e, max_iterations, _fcm_criterion, metric, v0=v0)
 
 
 def pcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
-    v, u, _, d, _ = fcm(x, c, m, e, max_iterations, metric=metric, v0=v0)
-    n = eta(u, d, m)
-    return _cmeans(x, c, m, e, max_iterations, _pcm_criterion, metric, v0=v, n=n)
+    """
+
+    Parameters
+    ---
+
+    `x` 2D array, size (S, N)
+        Data to be clustered. N is the number of data sets;
+        S is the number of features within each sample vector.
+
+    `c` int
+        Number of clusters
+
+    `m` float, optional
+        Fuzzifier
+
+    `e` float, optional
+        Convergence threshold
+
+    `max_iterations` int, optional
+        Maximum number of iterations
+
+    `v0` array-like, optional
+        Initial cluster centers
+
+    Returns
+    ---
+
+    `v` 2D Array, size (S, c)
+        Cluster centers
+
+    `v0` 2D Array (S, c)
+        Inital Cluster Centers
+
+    `u` 2D Array (S, N)
+        Final partitioned matrix
+
+    `u0` 2D Array (S, N)
+        Initial partition matrix
+
+    `d` 2D Array (S, N)
+        Distance Matrix
+
+    `t` int
+        Number of iterations run
+
+    """
+
+    v, v0, u, u0, d, t = fcm(x, c, m, e, max_iterations, metric=metric, v0=v0)
+    n = _eta(u, d, m)
+    return _cmeans(x, c, m, e, t, _pcm_criterion, metric, v0=v, n=n)
