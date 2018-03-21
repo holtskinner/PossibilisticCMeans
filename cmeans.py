@@ -34,15 +34,12 @@ def _fcm_criterion(x, v, n, m, metric):
 
 def _pcm_criterion(x, v, n, m, metric):
 
-    d = cdist(x.T, v, metric=metric).T
+    d = cdist(x.T, v, metric=metric)
     d = np.fmax(d, np.finfo(x.dtype).eps)
 
-    d2 = d ** 2
-
-    d2 = d2 / n
-
+    d2 = (d ** 2) / n
     exp = 1. / (m - 1)
-    d2 = d2 ** exp
+    d2 = d2.T ** exp
     u = 1. / (1. + d2)
 
     return u, d
@@ -105,7 +102,6 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
         print("Error: Fuzzifier must be greater than 1")
         return
 
-    n = 1
     # Initialize the cluster centers
     # If the user doesn't provide their own starting points,
     if v0 is None:
