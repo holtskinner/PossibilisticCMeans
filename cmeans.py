@@ -2,10 +2,10 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 
-def eta(centers, membership, distance, fuzzifier):
+def eta(v, u, d, m):
 
-    u = membership ** fuzzifier
-    d = distance ** 2
+    u = u ** m
+    d = d ** 2
     n = np.sum(u * d, axis=1) / np.sum(u, axis=1)
 
     return n
