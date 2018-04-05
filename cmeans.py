@@ -16,6 +16,20 @@ def _update_clusters(x, u, m):
     return v
 
 
+def _hcm_criterion(x, v, n, m, metric):
+
+    d = cdist(x.T, v, metric=metric)
+
+    y = np.argmin(d, axis=1)
+
+    u = np.zeros((v.shape[0], x.shape[1]))
+
+    for i in range(x.shape[1]):
+        u[y[i]][i] = 1
+
+    return u, d
+
+
 def _fcm_criterion(x, v, n, m, metric):
 
     d = cdist(x.T, v, metric=metric).T
@@ -56,7 +70,7 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
     if not c or c <= 0:
         print("Error: Number of clusters must be at least 1")
 
-    if not m or m <= 1:
+    if not m:
         print("Error: Fuzzifier must be greater than 1")
         return
 
@@ -72,7 +86,7 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
     v[0] = np.array(v0)
 
     # Membership Matrix Each Data Point in eah cluster
-    u = np.empty((max_iterations, c, N))
+    u = np.zeros((max_iterations, c, N))
 
     # Number of Iterations
     t = 0
@@ -92,6 +106,8 @@ def _cmeans(x, c, m, e, max_iterations, criterion_function, metric="euclidean", 
 
 
 # Public Facing Functions
+def hcm(x, c, e, max_iterations, metric="euclidean", v0=None):
+    return _cmeans(x, c, 1, e, max_iterations, _hcm_criterion, metric, v0=v0)
 
 
 def fcm(x, c, m, e, max_iterations, metric="euclidean", v0=None):
