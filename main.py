@@ -13,13 +13,14 @@ def generate_data(num_samples, num_features, c, shuffle=True):
     x = x.T
 
     labels = np.zeros(num_samples)
-    labels[0:100] = 0
-    labels[100:200]
 
-    j = num_samples / c
+    j = int(num_samples / c)
 
     for i in range(c):
-        labels[(i * j):((i + 1) * j)] = i
+        p = i * j
+        q = (i + 1) * j
+        print()
+        labels[p:q] = i
 
     return x, labels
 
@@ -50,7 +51,7 @@ def verify_clusters(x, c, v, u, labels):
     print(ssd_clusters / ssd_actual)
 
 
-num_samples = 300000
+num_samples = 3000
 num_features = 2
 c = 3
 fuzzifier = 1.2
@@ -96,17 +97,4 @@ v, v0, u, u0, d, t = cmeans.pcm(digits, c, fuzzifier, error, maxiter)
 
 print("Digits")
 verify_clusters(digits.T, c, v, u, labels)
-# plot(digits.T, v, u, c)
-
-c = 2
-cancer = ds.load_breast_cancer()
-
-labels = cancer.target
-
-cancer = np.array(cancer.data).T
-v, v0, u, u0, d, t = cmeans.fcm(cancer, c, fuzzifier, error, maxiter)
-
-plot(cancer.T, v, u, c)
-
-print("Cancer")
-verify_clusters(cancer.T, c, v, u, labels)
+plot(digits.T, v, u, c)
