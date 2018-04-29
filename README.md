@@ -90,7 +90,7 @@ During development of the algorithms, random multi-dimensional gaussian "blobs" 
 
 This particular cluster set worked quite well on the validity measure, getting a distance ratio of 1.0000005, which means clustering provided slightly better mean values than the classes themselves; however, this also could have been a minor floating point error with numpy. The average distance ratio was .98 because the gaussian blobs are the absolute best case scenario for clustering algorithms and are not representative of real datasets. They are purely used to make sure the algorithm works as expected.
 
-![](./clusterImages/Cluster7.jpg)
+![](./clusterImages/Cluster7.JPG)
 
 [https://en.wikipedia.org/wiki/Iris_flower_data_set](https://en.wikipedia.org/wiki/Iris_flower_data_set)
 
