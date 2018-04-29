@@ -126,7 +126,7 @@ One of the original goals for the project was to allow the Clustering Algorithms
 
 A further application of this implementation is for my Senior Capstone team project (with Alex Hurt and Payton Hosna) which seeks to group NFL teams based on playing styles and use the results to predict the outcome of games. This data is ideal for clustering because there are no explicit labels for classes and the ultimate goal is to find similar groups in the dataset. The data was sourced from [Kaggle](https://www.kaggle.com/maxhorowitz/nflplaybyplay2009to2016)
 
-![](./clusterImages/NFL.png)
+![](./clusterImages/NFLClusters.JPG)
 
 The clustering results were aggregated by Alex Hurt and each cluster was compared against the others by game winner. The numbers in each circle are the likelihood of a cluster winning against all other clusters. The outcome proved that the clustering was 63.33% accurate at predicting the winner. The other Machine Learning Model chosen was a MultiLayer Perceptron, which provided an accuracy of 60.42%, 3 percent less than clustering.
 
